@@ -24,8 +24,7 @@ def main():
             webhook_url = os.environ.get('WEBHOOK_URL', f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}")
             bot.start_webhook(
                 port=port, 
-                webhook_url=webhook_url,
-                listen="0.0.0.0"  # Ensure it binds correctly
+                webhook_url=webhook_url
             )
         else:
             logger.info("Running locally - using polling mode")
