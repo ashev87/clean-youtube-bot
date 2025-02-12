@@ -38,6 +38,7 @@ def main():
             
             print("Starting webhook...", file=sys.stdout)
             bot.start_webhook(
+                listen='0.0.0.0',  # Listen on all interfaces
                 port=port, 
                 webhook_url=webhook_url
             )
