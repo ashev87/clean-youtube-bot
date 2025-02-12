@@ -2,8 +2,13 @@ import os
 import sys
 import logging
 
-# Add current directory to Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add the correct path for both local and Render environments
+if os.path.exists('/opt/render/project/src'):
+    # Render environment
+    sys.path.append('/opt/render/project')
+else:
+    # Local environment
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from src.bot import YouTubeBot
 

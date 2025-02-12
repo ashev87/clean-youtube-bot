@@ -6,7 +6,7 @@ services:
     startCommand: python run_bot.py
     envVars:
       - key: PYTHONPATH
-        value: .
+        value: /opt/render/project
       - key: TELEGRAM_TOKEN
         sync: false
       - key: MISTRAL_API_KEY
