@@ -2,10 +2,10 @@
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram import Update
 import logging
-from .caption_handler import CaptionHandler
-from .mistral_summary_generator import MistralSummaryGenerator
-from .config import Config
-from .exceptions import *
+from src.caption_handler import CaptionHandler
+from src.mistral_summary_generator import MistralSummaryGenerator
+from src.config import Config
+from src.exceptions import *
 import json
 import traceback
 import os
