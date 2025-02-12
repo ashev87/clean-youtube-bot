@@ -106,31 +106,24 @@ class YouTubeBot:
             logger.critical(f"Failed to start bot: {str(e)}")
             raise
 
-    def start_webhook(self, port: int, webhook_url: str = None):
-        """Start the bot with webhook"""
-        try:
-            # Add handlers
-            self._add_handlers()
-            
-            logger.info(f"Starting webhook on port {port}")
-            webhook_url = f"{webhook_url}/{self.config.TELEGRAM_TOKEN}" if webhook_url else None
-            logger.info(f"Setting webhook URL to: {webhook_url}")
-            
-            self.app.run_webhook(
-                listen='0.0.0.0',  # Important: listen on all interfaces
-                port=port,
-                url_path=self.config.TELEGRAM_TOKEN,
-                webhook_url=webhook_url,
-                secret_token=self.config.WEBHOOK_SECRET,
-                drop_pending_updates=True,
-                allowed_updates=["message"],
-                webhook_max_connections=40
-            )
-            
-        except Exception as e:
-            logger.critical(f"Failed to start bot: {str(e)}")
-            logger.critical("Stack trace:", exc_info=True)
-            raise
+    def start_webhook(self):
+    """Start the bot with webhook on Render"""
+    port = int(os.environ.get('PORT', 8080))  # Dynamically read the assigned Render port
+    webhook_url = os.environ.get('WEBHOOK_URL', f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}/{self.config.TELEGRAM_TOKEN}")
+
+    logger.info(f"🚀 Starting webhook on Render, listening on port {port}")
+    logger.info(f"🔗 Webhook URL: {webhook_url}")
+
+    self.app.run_webhook(
+        listen="0.0.0.0",  # Bind to all interfaces
+        port=port,
+        url_path=self.config.TELEGRAM_TOKEN,
+        webhook_url=webhook_url,
+        secret_token=self.config.WEBHOOK_SECRET,
+        drop_pending_updates=True,
+        allowed_updates=["message"],
+        webhook_max_connections=40
+    )
 
     def _add_handlers(self):
         """Add message handlers"""
