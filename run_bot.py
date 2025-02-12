@@ -37,7 +37,11 @@ def main():
             print(f"Webhook URL: {webhook_url}", file=sys.stdout)
             
             print("Starting webhook...", file=sys.stdout)
-            bot.start_webhook()
+            bot.start_webhook(
+                listen='0.0.0.0',  # Listen on all interfaces
+                port=port, 
+                webhook_url=webhook_url
+            )
             print("Webhook started", file=sys.stdout)
         else:
             print("Starting polling...", file=sys.stdout)
