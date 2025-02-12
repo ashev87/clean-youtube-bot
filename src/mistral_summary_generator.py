@@ -1,7 +1,7 @@
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import logging
-from .exceptions import *
+from src.exceptions import *
 
 logger = logging.getLogger(__name__)
 

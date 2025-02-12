@@ -6,7 +6,7 @@ from youtube_transcript_api._errors import (
     VideoUnavailable
 )
 import logging
-from .exceptions import *
+from src.exceptions import *
 import re
 from youtube_transcript_api.formatters import TextFormatter
 

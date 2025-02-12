@@ -1,7 +1,11 @@
 import os
-from src.bot import YouTubeBot
-import logging
 import sys
+import logging
+
+# Add current directory to Python path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from src.bot import YouTubeBot
 
 # Set up logging
 logging.basicConfig(

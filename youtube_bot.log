@@ -1,0 +1,25 @@
+2025-02-12 16:14:53,143 - __main__ - INFO - Starting application on port 8080
+2025-02-12 16:14:53,763 - src.bot - INFO - Running locally - using polling mode
+2025-02-12 16:14:53,899 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getMe "HTTP/1.1 200 OK"
+2025-02-12 16:14:53,930 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/deleteWebhook "HTTP/1.1 200 OK"
+2025-02-12 16:14:53,930 - telegram.ext.Application - INFO - Application started
+2025-02-12 16:15:04,009 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:15:14,033 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:15:17,036 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:15:17,200 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/sendMessage "HTTP/1.1 200 OK"
+2025-02-12 16:15:17,201 - src.caption_handler - INFO - Extracted video ID: CGiYEPFMi6E
+2025-02-12 16:15:17,201 - src.caption_handler - INFO - Fetching transcript for video ID: CGiYEPFMi6E
+2025-02-12 16:15:17,985 - src.caption_handler - ERROR - Error getting transcript list: 'TranscriptList' object has no attribute 'manual'
+2025-02-12 16:15:18,696 - src.caption_handler - INFO - Successfully got transcript of length: 29168
+2025-02-12 16:15:18,697 - src.mistral_summary_generator - INFO - Generating summary for transcript of length: 29168
+2025-02-12 16:15:18,697 - src.mistral_summary_generator - INFO - Truncating transcript from 29168 to 4000 characters
+2025-02-12 16:15:51,279 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-02-12 16:15:51,279 - src.mistral_summary_generator - INFO - Generated summary of length: 2393
+2025-02-12 16:15:51,279 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:15:51,373 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/deleteMessage "HTTP/1.1 200 OK"
+2025-02-12 16:15:51,472 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/sendMessage "HTTP/1.1 200 OK"
+2025-02-12 16:16:01,316 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:16:11,347 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:16:20,907 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot7744223371:AAFa2GV2h66cVyRAHNQP6l07AEUZxs4wk7o/getUpdates "HTTP/1.1 200 OK"
+2025-02-12 16:16:20,907 - telegram.ext.Application - INFO - Application is stopping. This might take a moment.
+2025-02-12 16:16:20,907 - telegram.ext.Application - INFO - Application.stop() complete
