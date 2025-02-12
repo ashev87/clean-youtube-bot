@@ -55,17 +55,18 @@ class CaptionHandler:
             # Add a small delay to avoid rate limiting
             time.sleep(1)
             
-            # Try to get video info first to verify access
-            try:
-                from youtube_transcript_api import YouTubeTranscriptApi
-                print("Initialized YouTubeTranscriptApi", file=sys.stdout)
-            except Exception as e:
-                print(f"Failed to import YouTubeTranscriptApi: {str(e)}", file=sys.stderr)
-                raise VideoNotFoundError
-
             try:
                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
                 print("Successfully got transcript", file=sys.stdout)
+            except TranscriptsDisabled as e:
+                print(f"Transcripts disabled: {str(e)}", file=sys.stderr)
+                raise TranscriptNotAvailableError
+            except NoTranscriptFound as e:
+                print(f"No transcript found: {str(e)}", file=sys.stderr)
+                raise TranscriptNotAvailableError
+            except VideoUnavailable as e:
+                print(f"Video unavailable: {str(e)}", file=sys.stderr)
+                raise VideoNotFoundError
             except Exception as e:
                 print(f"Failed to get transcript: {str(e)}", file=sys.stderr)
                 raise VideoNotFoundError
@@ -75,16 +76,10 @@ class CaptionHandler:
             print(f"Transcript length: {len(full_transcript)} chars", file=sys.stdout)
             
             return full_transcript
-        except TranscriptsDisabled:
-            print("Transcripts are disabled for this video", file=sys.stderr)
-            raise TranscriptNotAvailableError
-        except NoTranscriptFound:
-            print("No transcript found for this video", file=sys.stderr)
-            raise TranscriptNotAvailableError
-        except VideoUnavailable:
-            print("Video is unavailable", file=sys.stderr)
-            raise VideoNotFoundError
+        
         except Exception as e:
             print(f"Unexpected error getting transcript: {str(e)}", file=sys.stderr)
             traceback.print_exc()
+            if isinstance(e, (TranscriptsDisabled, NoTranscriptFound)):
+                raise TranscriptNotAvailableError
             raise VideoNotFoundError

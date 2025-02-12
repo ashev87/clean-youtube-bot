@@ -51,11 +51,15 @@ class YouTubeBot:
                 return
 
             try:
+                print("Getting transcript...", file=sys.stdout)
                 transcript = self.caption_handler.get_transcript(video_id)
+                print(f"Got transcript of length: {len(transcript)}", file=sys.stdout)
             except TranscriptNotAvailableError:
-                await self.handle_error(update, "No captions available for this video. Try another video.")
+                print("No captions available", file=sys.stderr)
+                await self.handle_error(update, "This video doesn't have captions enabled. Please try a video with subtitles.")
                 return
             except VideoNotFoundError:
+                print("Video unavailable", file=sys.stderr)
                 await self.handle_error(update, "Video is unavailable or private.")
                 return
 
