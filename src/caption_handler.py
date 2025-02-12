@@ -13,6 +13,7 @@ import sys
 import time
 import traceback
 from urllib.parse import urlparse, parse_qs
+import httpx
 
 logging.basicConfig(
     level=logging.INFO,
@@ -52,12 +53,38 @@ class CaptionHandler:
         """Get transcript from YouTube video"""
         try:
             print(f"Attempting to get transcript for video {video_id}", file=sys.stdout)
-            # Add a small delay to avoid rate limiting
             time.sleep(1)
             
+            # Add headers to mimic a browser
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            
+            # Create a custom http client
+            http_client = httpx.Client(
+                headers=headers,
+                follow_redirects=True
+            )
+            
             try:
-                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-                print("Successfully got transcript", file=sys.stdout)
+                print("Attempting to list transcripts...", file=sys.stdout)
+                transcript_list = YouTubeTranscriptApi.list_transcripts(
+                    video_id,
+                    http_client=http_client
+                )
+                print("Got transcript list", file=sys.stdout)
+                
+                # Try to get manual transcripts first, then auto-generated
+                try:
+                    transcript = transcript_list.find_manually_created_transcript()
+                    print("Found manual transcript", file=sys.stdout)
+                except NoTranscriptFound:
+                    transcript = transcript_list.find_generated_transcript()
+                    print("Found auto-generated transcript", file=sys.stdout)
+                
+                transcript_data = transcript.fetch()
+                print("Successfully fetched transcript data", file=sys.stdout)
+                
             except TranscriptsDisabled as e:
                 print(f"Transcripts disabled: {str(e)}", file=sys.stderr)
                 raise TranscriptNotAvailableError
@@ -69,10 +96,11 @@ class CaptionHandler:
                 raise VideoNotFoundError
             except Exception as e:
                 print(f"Failed to get transcript: {str(e)}", file=sys.stderr)
+                traceback.print_exc()
                 raise VideoNotFoundError
 
             # Join all transcript pieces
-            full_transcript = ' '.join([entry['text'] for entry in transcript_list])
+            full_transcript = ' '.join([entry['text'] for entry in transcript_data])
             print(f"Transcript length: {len(full_transcript)} chars", file=sys.stdout)
             
             return full_transcript
