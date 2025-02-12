@@ -118,8 +118,9 @@ class YouTubeBot:
         self.app.add_handler(MessageHandler(filters.COMMAND, self.start_command))
 
         self.app.run_webhook(
-            webhook_url=webhook_url,
+            listen="0.0.0.0",  # Important: Listen on all interfaces
             port=port,
+            webhook_url=webhook_url,
             secret_token=self.config.WEBHOOK_SECRET,
             drop_pending_updates=True
         )
