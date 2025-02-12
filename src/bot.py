@@ -106,32 +106,26 @@ class YouTubeBot:
             logger.critical(f"Failed to start bot: {str(e)}")
             raise
 
-    def start_webhook(self, port: int):
+    def start_webhook(self, port: int, webhook_url: str = None):
         """Start the bot with webhook"""
         try:
             # Add handlers
             self._add_handlers()
             
-            # Check if running locally
-            is_local = not os.getenv('K_REVISION')
-            if is_local:
-                logger.info("Running locally - using polling mode")
-                self.app.run_polling()
-            else:
-                logger.info(f"Starting webhook on port {port}")
-                webhook_url = f"{self.config.WEBHOOK_URL}/{self.config.TELEGRAM_TOKEN}"
-                logger.info(f"Setting webhook URL to: {webhook_url}")
-                
-                self.app.run_webhook(
-                    listen='0.0.0.0',
-                    port=port,
-                    url_path=self.config.TELEGRAM_TOKEN,
-                    webhook_url=webhook_url,
-                    secret_token=self.config.WEBHOOK_SECRET,
-                    drop_pending_updates=True,
-                    allowed_updates=["message"],
-                    webhook_max_connections=40
-                )
+            logger.info(f"Starting webhook on port {port}")
+            webhook_url = f"{webhook_url}/{self.config.TELEGRAM_TOKEN}" if webhook_url else None
+            logger.info(f"Setting webhook URL to: {webhook_url}")
+            
+            self.app.run_webhook(
+                listen='0.0.0.0',  # Important: listen on all interfaces
+                port=port,
+                url_path=self.config.TELEGRAM_TOKEN,
+                webhook_url=webhook_url,
+                secret_token=self.config.WEBHOOK_SECRET,
+                drop_pending_updates=True,
+                allowed_updates=["message"],
+                webhook_max_connections=40
+            )
             
         except Exception as e:
             logger.critical(f"Failed to start bot: {str(e)}")

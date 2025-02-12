@@ -17,11 +17,20 @@ logger = logging.getLogger(__name__)
 
 def main():
     try:
-        port = int(os.environ.get('PORT', 8080))
-        logger.info(f"Starting application on port {port}")
+        # Render sets PORT environment variable, default is 10000
+        port = int(os.environ.get('PORT', 10000))
+        logger.info(f"Starting bot on port {port}")
         
         bot = YouTubeBot()
-        bot.start_webhook(port)
+        if os.environ.get('RENDER'):
+            logger.info("Running on Render - using webhook mode")
+            bot.start_webhook(
+                port=port,  # Use the port Render provides
+                webhook_url=os.environ.get('WEBHOOK_URL')
+            )
+        else:
+            logger.info("Running locally - using polling mode")
+            bot.start_polling()
         
     except Exception as e:
         logger.error(f"Failed to start: {str(e)}", exc_info=True)
