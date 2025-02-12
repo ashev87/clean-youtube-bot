@@ -4,9 +4,16 @@ import sys
 import traceback
 from urllib.parse import urlparse, parse_qs
 from .exceptions import VideoNotFoundError, TranscriptNotAvailableError
+import os
+import tempfile
 
 class CaptionHandler:
     def __init__(self):
+        # Get cookies from environment variable
+        self.cookies = os.environ.get('YOUTUBE_COOKIES')
+        if not self.cookies:
+            print("Warning: No YouTube cookies found in environment", file=sys.stderr)
+        
         self.ydl_opts = {
             'quiet': True,
             'no_warnings': True,
@@ -14,6 +21,10 @@ class CaptionHandler:
             'writeautomaticsub': True,
             'subtitleslangs': ['en'],
             'skip_download': True,
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+            }
         }
 
     def get_transcript(self, video_id: str) -> str:
@@ -21,29 +32,48 @@ class CaptionHandler:
             print(f"Attempting to get transcript for video {video_id}", file=sys.stdout)
             url = f"https://www.youtube.com/watch?v={video_id}"
             
-            with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
-                print("Getting video info...", file=sys.stdout)
-                info = ydl.extract_info(url, download=False)
-                
-                if 'subtitles' in info and 'en' in info['subtitles']:
-                    print("Found manual English subtitles", file=sys.stdout)
-                    subtitles = info['subtitles']['en']
-                elif 'automatic_captions' in info and 'en' in info['automatic_captions']:
-                    print("Found auto-generated English subtitles", file=sys.stdout)
-                    subtitles = info['automatic_captions']['en']
-                else:
-                    print("No English subtitles found", file=sys.stderr)
-                    raise TranscriptNotAvailableError
+            # Create temporary cookie file if we have cookies
+            cookie_file = None
+            if self.cookies:
+                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as f:
+                    print("Creating temporary cookie file", file=sys.stdout)
+                    f.write(self.cookies)
+                    cookie_file = f.name
+                    self.ydl_opts['cookies'] = cookie_file
+                    print("Added cookies to yt-dlp options", file=sys.stdout)
+            
+            try:
+                with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
+                    print("Getting video info...", file=sys.stdout)
+                    info = ydl.extract_info(url, download=False)
+                    
+                    if 'subtitles' in info and 'en' in info['subtitles']:
+                        print("Found manual English subtitles", file=sys.stdout)
+                        subtitles = info['subtitles']['en']
+                    elif 'automatic_captions' in info and 'en' in info['automatic_captions']:
+                        print("Found auto-generated English subtitles", file=sys.stdout)
+                        subtitles = info['automatic_captions']['en']
+                    else:
+                        print("No English subtitles found", file=sys.stderr)
+                        raise TranscriptNotAvailableError
 
-                # Get the transcript text
-                transcript = []
-                for sub in subtitles:
-                    if isinstance(sub, dict) and 'text' in sub:
-                        transcript.append(sub['text'])
-                
-                full_transcript = ' '.join(transcript)
-                print(f"Transcript length: {len(full_transcript)} chars", file=sys.stdout)
-                return full_transcript
+                    # Get the transcript text
+                    transcript = []
+                    for sub in subtitles:
+                        if isinstance(sub, dict) and 'text' in sub:
+                            transcript.append(sub['text'])
+                    
+                    full_transcript = ' '.join(transcript)
+                    print(f"Transcript length: {len(full_transcript)} chars", file=sys.stdout)
+                    return full_transcript
+            finally:
+                # Clean up temporary cookie file
+                if cookie_file:
+                    try:
+                        os.unlink(cookie_file)
+                        print("Removed temporary cookie file", file=sys.stdout)
+                    except Exception as e:
+                        print(f"Error removing cookie file: {e}", file=sys.stderr)
 
         except yt_dlp.utils.DownloadError as e:
             print(f"Download error: {str(e)}", file=sys.stderr)
