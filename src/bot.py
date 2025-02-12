@@ -9,6 +9,7 @@ from src.exceptions import *
 import json
 import traceback
 import os
+import sys
 
 logging.basicConfig(
     level=logging.INFO,
@@ -108,20 +109,18 @@ class YouTubeBot:
 
     def start_webhook(self):
         """Start the bot with webhook"""
-        webhook_url = os.environ.get('WEBHOOK_URL', f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}")
         port = int(os.environ.get('PORT', 8080))
+        webhook_url = os.environ.get('WEBHOOK_URL', f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME')}")
         
-        self.app.add_handler(MessageHandler(
-            filters.TEXT & (filters.Entity("url") | filters.Regex(r'youtube\.com|youtu\.be')),
-            self.handle_youtube_link
-        ))
-        self.app.add_handler(MessageHandler(filters.COMMAND, self.start_command))
+        print(f"Starting webhook on port {port}", file=sys.stdout)
+        print(f"Webhook URL: {webhook_url}", file=sys.stdout)
+        
+        self._add_handlers()
 
         self.app.run_webhook(
-            listen="0.0.0.0",  # Important: Listen on all interfaces
+            listen="0.0.0.0",
             port=port,
-            webhook_url=webhook_url,
-            secret_token=self.config.WEBHOOK_SECRET,
+            webhook_url=webhook_url,  # Simplified URL
             drop_pending_updates=True
         )
 
